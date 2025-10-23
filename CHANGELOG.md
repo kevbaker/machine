@@ -1,0 +1,43 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+- Initial project setup
+- README.md with comprehensive documentation
+- LICENSE file (MIT)
+- CONTRIBUTING.md with contribution guidelines
+- CODE_OF_CONDUCT.md for community standards
+- CHANGELOG.md for tracking changes
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [0.1.0] - 2025-10-23
+
+### Added
+- Initial repository creation
+- Basic README with project description
+
+---
+
+## Types of Changes
+
+- `Added` for new features
+- `Changed` for changes in existing functionality
+- `Deprecated` for soon-to-be removed features
+- `Removed` for now removed features
+- `Fixed` for any bug fixes
+- `Security` in case of vulnerabilities
