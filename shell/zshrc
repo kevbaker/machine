@@ -151,9 +151,26 @@ alias fm='yazi'
 alias d='docker'
 alias dc='docker compose'
 
+# npm shortcuts
+alias ni='npm install'
+alias nid='npm install --save-dev'
+alias nig='npm install --global'
+alias nr='npm run'
+alias ns='npm start'
+alias nt='npm test'
+alias nb='npm run build'
+alias nw='npm run dev'
+
 # ============================================
 # Functions
 # ============================================
+
+# Quick npm init with sensible defaults
+npminit() {
+  npm init -y
+  echo "📦 package.json created"
+  echo "🔧 Run 'npm install <package>' to add dependencies"
+}
 
 # Create directory and cd into it
 mkcd() {

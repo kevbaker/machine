@@ -277,6 +277,15 @@ s     # → ripgrep text search
 
 # Git
 lg    # → lazygit TUI
+
+# npm shortcuts
+ni    # → npm install
+nid   # → npm install --save-dev
+nr    # → npm run
+ns    # → npm start
+nt    # → npm test
+nb    # → npm run build
+npminit  # → npm init -y (quick setup)
 ```
 
 ### Productivity Tools
@@ -285,6 +294,30 @@ lg    # → lazygit TUI
 - **Neovim**: Pre-configured with modern plugins
 - **Yazi**: Powerful terminal file manager
 - **Lazygit**: Beautiful git interface
+
+### Node.js/npm Workflow
+
+Node.js is managed via **nvm** (Node Version Manager) for easy version switching:
+
+```bash
+# Check installed versions
+nvm list
+
+# Install a specific version
+nvm install 18
+nvm install 20
+
+# Switch versions per project
+nvm use 18
+
+# Quick project setup with npm
+npminit              # Creates package.json with defaults
+ni express           # Install express
+nid typescript       # Install typescript as dev dependency
+nr dev               # Run your dev script
+```
+
+**npm is ready to use immediately** after bootstrap completes, with helpful aliases configured in your shell.
 
 ---
 

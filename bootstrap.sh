@@ -321,8 +321,16 @@ if [[ ! -d "$HOME/.nvm" ]]; then
   nvm install --lts
   nvm use --lts
   log_success "Node.js $(node --version) installed"
+  
+  # Set up global npm packages
+  log_info "Installing global npm packages..."
+  npm install -g npm@latest
+  log_success "npm updated to latest version"
 else
   log_success "nvm already installed"
+  # Ensure nvm is loaded for this session
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 fi
 
 # Install pyenv (Python Version Manager)
