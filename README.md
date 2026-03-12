@@ -28,14 +28,12 @@ MACHINE_NON_INTERACTIVE=1 ./bootstrap.sh
 
 During installation, you'll be prompted to customize:
 
-1. **Git Configuration**
-   - Your full name (for commits)
-   - Your email address
-   - GPG signing (optional)
-
-2. **Optional Applications**
-   - Choose which GUI apps to install
-   - Skip apps you don't need
+1. **Git Configuration** - Name, email, GPG signing
+2. **SSH Key Generation** - Create and add to GitHub
+3. **macOS System Preferences** - Developer-friendly defaults
+4. **Optional Applications** - Choose GUI apps to install
+5. **VS Code Extensions** - Essential dev extensions
+6. **Docker Images** - Common containers (postgres, redis, nginx)
 
 **Non-interactive mode** skips all prompts and uses defaults.
 
@@ -49,6 +47,9 @@ During installation, you'll be prompted to customize:
 |------|---------|
 | **git** | Version control |
 | **neovim** | Modern text editor |
+| **golang** | Go programming language |
+| **rust** | Rust programming language |
+| **bun** | Fast JavaScript runtime & toolkit |
 | **ripgrep** (rg) | Fast text search |
 | **fd** | Fast file finder |
 | **fzf** | Fuzzy finder |
@@ -65,12 +66,26 @@ During installation, you'll be prompted to customize:
 | **bat** | Cat with syntax highlighting |
 | **eza** | Modern ls replacement |
 
+### 🔧 Development Tools
+
+| Tool | Purpose |
+|------|---------|
+| **nvm** | Node.js version manager |
+| **pyenv** | Python version manager |
+| **Tauri CLI** | Cross-platform app framework |
+
+### 🔤 Developer Fonts
+
+- **JetBrains Mono Nerd Font**
+- **Fira Code Nerd Font**
+- **Hack Nerd Font**
+
 ### 🖥️ Applications
 
 #### Core (Always Installed)
-- **Visual Studio Code** - Code editor
+- **Visual Studio Code** - Code editor with extensions
 - **Ghostty** - Modern terminal emulator
-- **Pixelmator Pro** - Image editor (requires App Store sign-in to activate)
+- **Pixelmator Pro** - Image editor (requires App Store)
 
 #### Optional (Interactive Prompt)
 - **Google Chrome** - Web browser
@@ -112,6 +127,45 @@ All configurations are stored in `~/.machine` and symlinked to their proper loca
 2. Changes take effect immediately (or after sourcing `~/.zshrc`)
 
 For local overrides, create `~/.zshrc.local` which will be sourced automatically.
+
+## ⚙️ What Gets Configured
+
+The bootstrap script goes beyond just installing tools - it sets up a complete development environment:
+
+### 🔐 SSH & Git
+- Generates SSH keys for GitHub authentication
+- Configures Git with your name, email, and preferences
+- Optionally sets up GPG commit signing
+
+### 🖥️ macOS Optimizations
+- Shows hidden files in Finder
+- Displays path bar and status bar
+- Enables fast key repeat
+- Tap to click on trackpad
+- Disables auto-correct
+- Screenshots save to Downloads
+
+### 📝 VS Code Extensions
+- GitHub Copilot & Copilot Chat
+- ESLint & Prettier
+- Rust Analyzer
+- Go extension
+- Tauri VS Code extension
+- Python & Pylance
+- Vim keybindings
+- Material Icon Theme
+- GitLens
+
+### 🐳 Docker Setup
+- Pulls common images (postgres, redis, nginx)
+- Configures for immediate use with OrbStack
+
+### 🐍 Language Environments
+- Node.js LTS via nvm
+- Python 3.12 via pyenv
+- Go toolchain
+- Rust toolchain + Tauri CLI
+- Bun runtime
 
 ---
 

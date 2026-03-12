@@ -162,7 +162,7 @@ echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓�
 echo
 
 log_info "Installing essential CLI tools..."
-for package in git neovim ripgrep fd fzf starship zoxide atuin yazi lazygit zellij gh gum ollama awscli bat eza; do
+for package in git neovim ripgrep fd fzf starship zoxide atuin yazi lazygit zellij gh gum ollama awscli bat eza golang rust bun; do
   if ! check_command "${package}"; then
     log_info "Installing ${package}..."
     if ! brew install "${package}"; then
@@ -181,6 +181,26 @@ if [[ -f "$(brew --prefix)/opt/fzf/install" ]]; then
   "$(brew --prefix)/opt/fzf/install" --all --no-bash --no-fish || true
   log_success "fzf keybindings installed"
 fi
+
+echo
+echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
+echo "🔤 INSTALLING DEVELOPER FONTS"
+echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
+echo
+
+log_info "Installing Nerd Fonts..."
+for font in font-jetbrains-mono-nerd-font font-fira-code-nerd-font font-hack-nerd-font; do
+  if ! brew list --cask "${font}" >/dev/null 2>&1; then
+    log_info "Installing ${font}..."
+    if ! brew install --cask "${font}"; then
+      log_warning "Failed to install ${font}"
+    else
+      log_success "${font} installed"
+    fi
+  else
+    log_success "${font} already installed"
+  fi
+done
 
 echo
 echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
@@ -251,6 +271,53 @@ else
       log_success "${app} already installed"
     fi
   done
+fi
+
+echo
+echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
+echo "🐍 INSTALLING LANGUAGE VERSION MANAGERS"
+echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
+echo
+
+# Install nvm (Node Version Manager)
+if [[ ! -d "$HOME/.nvm" ]]; then
+  log_info "Installing nvm (Node Version Manager)..."
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  log_success "nvm installed"
+  
+  log_info "Installing Node.js LTS..."
+  nvm install --lts
+  nvm use --lts
+  log_success "Node.js $(node --version) installed"
+else
+  log_success "nvm already installed"
+fi
+
+# Install pyenv (Python Version Manager)
+if ! check_command pyenv; then
+  log_info "Installing pyenv (Python Version Manager)..."
+  brew install pyenv pyenv-virtualenv
+  log_success "pyenv installed"
+  
+  log_info "Installing Python 3.12..."
+  pyenv install 3.12
+  pyenv global 3.12
+  log_success "Python $(pyenv version | awk '{print $1}') installed"
+else
+  log_success "pyenv already installed"
+fi
+
+# Install Tauri CLI (requires Rust)
+if check_command cargo; then
+  if ! cargo install --list | grep -q "tauri-cli"; then
+    log_info "Installing Tauri CLI..."
+    cargo install tauri-cli
+    log_success "Tauri CLI installed"
+  else
+    log_success "Tauri CLI already installed"
+  fi
 fi
 
 echo
@@ -366,6 +433,97 @@ fi
 
 echo
 echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
+echo "🔐 SSH KEY SETUP"
+echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
+echo
+
+if [[ ! -f "$HOME/.ssh/id_ed25519" ]] && [[ ! -f "$HOME/.ssh/id_rsa" ]]; then
+  if [[ "${NON_INTERACTIVE}" == "false" ]]; then
+    echo
+    if prompt_yes_no "Generate SSH key for GitHub/Git?"; then
+      log_info "Generating SSH key..."
+      ssh-keygen -t ed25519 -C "${GIT_USER_EMAIL:-your-email@example.com}" -f "$HOME/.ssh/id_ed25519" -N ""
+      
+      # Start ssh-agent and add key
+      eval "$(ssh-agent -s)" >/dev/null
+      ssh-add "$HOME/.ssh/id_ed25519" 2>/dev/null
+      
+      log_success "SSH key generated at ~/.ssh/id_ed25519"
+      
+      # Copy public key to clipboard
+      pbcopy < "$HOME/.ssh/id_ed25519.pub"
+      log_success "Public key copied to clipboard!"
+      echo
+      echo "  Add this key to GitHub:"
+      echo "  ${BLUE}https://github.com/settings/ssh/new${RESET}"
+      echo "  Or run: ${BLUE}gh ssh-key add ~/.ssh/id_ed25519.pub${RESET}"
+      echo
+    fi
+  else
+    log_info "SSH key generation skipped (non-interactive mode)"
+  fi
+else
+  log_success "SSH key already exists"
+fi
+
+echo
+echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
+echo "⚙️  macOS SYSTEM PREFERENCES"
+echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
+echo
+
+if [[ "${NON_INTERACTIVE}" == "false" ]]; then
+  if prompt_yes_no "Apply recommended macOS settings?"; then
+    log_info "Configuring macOS preferences..."
+    
+    # Finder: show hidden files
+    defaults write com.apple.finder AppleShowAllFiles -bool true
+    
+    # Finder: show path bar
+    defaults write com.apple.finder ShowPathbar -bool true
+    
+    # Finder: show status bar
+    defaults write com.apple.finder ShowStatusBar -bool true
+    
+    # Show all filename extensions
+    defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+    
+    # Disable warning when changing file extensions
+    defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
+    
+    # Set fast key repeat rate
+    defaults write NSGlobalDomain KeyRepeat -int 2
+    defaults write NSGlobalDomain InitialKeyRepeat -int 15
+    
+    # Enable tap to click
+    defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
+    defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+    
+    # Disable auto-correct
+    defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+    
+    # Require password immediately after sleep
+    defaults write com.apple.screensaver askForPassword -int 1
+    defaults write com.apple.screensaver askForPasswordDelay -int 0
+    
+    # Show battery percentage
+    defaults write com.apple.menuextra.battery ShowPercent -string "YES"
+    
+    # Set screenshot location to Downloads
+    defaults write com.apple.screencapture location -string "${HOME}/Downloads"
+    
+    # Disable screenshot shadow
+    defaults write com.apple.screencapture disable-shadow -bool true
+    
+    log_success "macOS preferences configured"
+    log_info "Note: Some changes require logout/restart to take effect"
+  fi
+else
+  log_info "macOS preferences skipped (non-interactive mode)"
+fi
+
+echo
+echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
 echo "🍎 CHECKING APPLE SERVICES"
 echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
 echo
@@ -414,6 +572,65 @@ fi
 
 echo
 echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
+echo "🧩 VS CODE EXTENSIONS"
+echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
+echo
+
+if check_command code; then
+  if [[ "${NON_INTERACTIVE}" == "false" ]]; then
+    if prompt_yes_no "Install recommended VS Code extensions?"; then
+      log_info "Installing VS Code extensions..."
+      
+      # Essential extensions
+      code --install-extension github.copilot
+      code --install-extension github.copilot-chat
+      code --install-extension dbaeumer.vscode-eslint
+      code --install-extension esbenp.prettier-vscode
+      code --install-extension rust-lang.rust-analyzer
+      code --install-extension golang.go
+      code --install-extension tauri-apps.tauri-vscode
+      code --install-extension bradlc.vscode-tailwindcss
+      code --install-extension ms-python.python
+      code --install-extension ms-python.vscode-pylance
+      code --install-extension vscodevim.vim
+      code --install-extension PKief.material-icon-theme
+      code --install-extension GitHub.github-vscode-theme
+      code --install-extension eamodio.gitlens
+      
+      log_success "VS Code extensions installed"
+    fi
+  else
+    log_info "VS Code extensions skipped (non-interactive mode)"
+  fi
+else
+  log_warning "VS Code not found, skipping extensions"
+fi
+
+echo
+echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
+echo "🐳 DOCKER/ORBSTACK SETUP"
+echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
+echo
+
+if check_command docker; then
+  log_success "Docker/OrbStack is available"
+  
+  if [[ "${NON_INTERACTIVE}" == "false" ]]; then
+    if prompt_yes_no "Pull common Docker images? (postgres, redis, nginx)"; then
+      log_info "Pulling common Docker images..."
+      docker pull postgres:16-alpine
+      docker pull redis:7-alpine
+      docker pull nginx:alpine
+      log_success "Docker images pulled"
+    fi
+  fi
+else
+  log_info "Docker/OrbStack not installed or not running"
+  log_info "If you installed OrbStack, launch it from Applications to enable Docker"
+fi
+
+echo
+echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
 echo "🎉 SETUP COMPLETE!"
 echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
 echo
@@ -430,13 +647,19 @@ echo "  6. Connect Tailscale: ${BLUE}tailscale up${RESET}"
 echo "  7. Start Ollama service: ${BLUE}ollama serve${RESET}"
 echo
 echo -e "${BOLD}📚 Installed tools:${RESET}"
-echo "  • Terminal multiplexer: ${BLUE}zellij${RESET}"
-echo "  • File manager: ${BLUE}yazi${RESET}"
-echo "  • Git TUI: ${BLUE}lazygit${RESET}"
-echo "  • Fuzzy finder: ${BLUE}fzf${RESET}"
-echo "  • File search: ${BLUE}fd${RESET}"
-echo "  • Text search: ${BLUE}rg${RESET}"
-echo "  • Cat alternative: ${BLUE}bat${RESET}"
-echo "  • LS alternative: ${BLUE}eza${RESET}"
+echo "  • Languages: ${BLUE}Node.js (nvm), Python (pyenv), Go, Rust, Bun${RESET}"
+echo "  • Frameworks: ${BLUE}Tauri CLI${RESET}"
+echo "  • Terminal: ${BLUE}zellij (multiplexer), yazi (file manager)${RESET}"
+echo "  • Git: ${BLUE}lazygit (TUI), gh (CLI)${RESET}"
+echo "  • Search: ${BLUE}fzf (fuzzy), fd (files), rg (text)${RESET}"
+echo "  • Utils: ${BLUE}bat (cat), eza (ls), starship (prompt)${RESET}"
+echo "  • Navigation: ${BLUE}zoxide (smart cd), atuin (history)${RESET}"
+echo "  • Dev fonts: ${BLUE}JetBrains Mono, Fira Code, Hack Nerd Fonts${RESET}"
+echo
+echo -e "${BOLD}🎨 Configured:${RESET}"
+echo "  • SSH keys generated and ready for GitHub"
+echo "  • macOS defaults optimized for development"
+echo "  • VS Code extensions installed"
+echo "  • Shell (zsh) with modern tools integrated"
 echo
 log_success "Happy hacking! 🚀"
