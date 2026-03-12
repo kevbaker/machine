@@ -1,0 +1,92 @@
+[user]
+	name = Kevin Baker
+	email = your-email@example.com
+	# Uncomment to enable GPG signing
+	# signingkey = YOUR_GPG_KEY
+	# gpgSign = true
+
+[core]
+	editor = nvim
+	pager = delta
+	excludesfile = ~/.gitignore_global
+	autocrlf = input
+
+[init]
+	defaultBranch = main
+
+[pull]
+	rebase = true
+
+[push]
+	default = current
+	autoSetupRemote = true
+
+[fetch]
+	prune = true
+
+[rebase]
+	autoStash = true
+
+[merge]
+	conflictstyle = diff3
+
+[diff]
+	colorMoved = zebra
+
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+
+[alias]
+	# Short aliases
+	co = checkout
+	br = branch
+	ci = commit
+	st = status
+	
+	# Useful aliases
+	unstage = reset HEAD --
+	last = log -1 HEAD
+	visual = log --graph --oneline --decorate --all
+	amend = commit --amend --no-edit
+	
+	# List aliases
+	aliases = config --get-regexp alias
+
+[color]
+	ui = auto
+
+[color "branch"]
+	current = yellow reverse
+	local = yellow
+	remote = green
+
+[color "diff"]
+	meta = yellow bold
+	frag = magenta bold
+	old = red bold
+	new = green bold
+
+[color "status"]
+	added = green
+	changed = yellow
+	untracked = red
+
+# Delta configuration (better diffs)
+[delta]
+	navigate = true
+	light = false
+	line-numbers = true
+	side-by-side = false
+
+[interactive]
+	diffFilter = delta --color-only
+
+# URL shortcuts
+[url "git@github.com:"]
+	insteadOf = gh:
+
+[url "https://github.com/"]
+	insteadOf = github:

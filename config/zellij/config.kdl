@@ -1,0 +1,69 @@
+// MACHINE - Zellij Configuration
+
+// Theme
+theme "tokyo-night"
+
+// Default shell
+default_shell "zsh"
+
+// Enable mouse mode
+mouse_mode true
+
+// Copy on select
+copy_on_select true
+
+// Simplified UI
+simplified_ui false
+
+// Pane frames
+pane_frames true
+
+// Default mode
+default_mode "normal"
+
+// Keybindings
+keybinds {
+    normal {
+        bind "Ctrl g" { SwitchToMode "locked"; }
+        bind "Ctrl p" { SwitchToMode "pane"; }
+        bind "Ctrl t" { SwitchToMode "tab"; }
+        bind "Ctrl s" { SwitchToMode "scroll"; }
+        bind "Ctrl h" { SwitchToMode "session"; }
+        bind "Ctrl o" { SwitchToMode "move"; }
+        bind "Ctrl q" { Quit; }
+    }
+    
+    pane {
+        bind "Esc" { SwitchToMode "normal"; }
+        bind "h" "Left" { MoveFocus "Left"; }
+        bind "l" "Right" { MoveFocus "Right"; }
+        bind "j" "Down" { MoveFocus "Down"; }
+        bind "k" "Up" { MoveFocus "Up"; }
+        bind "n" { NewPane; }
+        bind "x" { CloseFocus; }
+        bind "f" { ToggleFocusFullscreen; }
+    }
+    
+    tab {
+        bind "Esc" { SwitchToMode "normal"; }
+        bind "n" { NewTab; }
+        bind "x" { CloseTab; }
+        bind "h" "Left" { GoToPreviousTab; }
+        bind "l" "Right" { GoToNextTab; }
+    }
+}
+
+// Copy command (macOS)
+copy_command "pbcopy"
+
+// Scrollback editor
+scrollback_editor "nvim"
+
+// Auto layout
+auto_layout true
+
+// Session serialization
+session_serialization true
+
+// Mirror session
+mirror_session false
