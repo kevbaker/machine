@@ -17,6 +17,7 @@ set -euo pipefail
 readonly VERSION="1.0.0"
 readonly REPO="https://github.com/kevbaker/machine.git"
 readonly INSTALL_DIR="$HOME/.machine"
+readonly LOG_FILE="$HOME/.machine-install-$(date +%Y%m%d_%H%M%S).log"
 
 readonly BOLD='\033[1m'
 readonly RESET='\033[0m'
@@ -31,10 +32,30 @@ if [[ ! -t 0 ]] || [[ "${CI:-}" == "true" ]] || [[ -n "${MACHINE_NON_INTERACTIVE
   NON_INTERACTIVE=true
 fi
 
-log_info() { echo -e "${BLUE}ℹ${RESET} $*"; }
-log_success() { echo -e "${GREEN}✅${RESET} $*"; }
-log_warning() { echo -e "${YELLOW}⚠️${RESET} $*"; }
-log_error() { echo -e "${RED}❌${RESET} $*"; }
+# Logging functions that write to both console and log file
+log_to_file() {
+  echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >> "${LOG_FILE}"
+}
+
+log_info() { 
+  echo -e "${BLUE}ℹ${RESET} $*"
+  log_to_file "INFO: $*"
+}
+
+log_success() { 
+  echo -e "${GREEN}✅${RESET} $*"
+  log_to_file "SUCCESS: $*"
+}
+
+log_warning() { 
+  echo -e "${YELLOW}⚠️${RESET} $*"
+  log_to_file "WARNING: $*"
+}
+
+log_error() { 
+  echo -e "${RED}❌${RESET} $*"
+  log_to_file "ERROR: $*"
+}
 
 prompt_yes_no() {
   local prompt="$1"
@@ -80,7 +101,14 @@ verify_package() {
   log_success "${package} installed successfully"
 }
 
-# Main script
+# Main script - Initialize log file
+echo "================================================" > "${LOG_FILE}"
+echo "MACHINE Bootstrap Installation Log" >> "${LOG_FILE}"
+echo "Started: $(date)" >> "${LOG_FILE}"
+echo "Version: ${VERSION}" >> "${LOG_FILE}"
+echo "================================================" >> "${LOG_FILE}"
+echo "" >> "${LOG_FILE}"
+
 echo -e "${BOLD}"
 cat <<'EOF'
 ███╗   ███╗ █████╗  ██████╗██╗  ██╗██╗███╗   ██╗███████╗
@@ -93,6 +121,8 @@ cat <<'EOF'
       macOS Developer Environment Bootstrap v${VERSION}
 EOF
 echo -e "${RESET}"
+echo
+log_info "Installation log: ${LOG_FILE}"
 echo
 
 # OS Detection
@@ -635,6 +665,12 @@ echo "🎉 SETUP COMPLETE!"
 echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
 echo
 
+# Write completion to log
+log_to_file "================================================"
+log_to_file "Installation completed successfully"
+log_to_file "Finished: $(date)"
+log_to_file "================================================"
+
 log_success "Your macOS development environment is ready!"
 echo
 echo -e "${BOLD}⚡ Next steps:${RESET}"
@@ -661,5 +697,9 @@ echo "  • SSH keys generated and ready for GitHub"
 echo "  • macOS defaults optimized for development"
 echo "  • VS Code extensions installed"
 echo "  • Shell (zsh) with modern tools integrated"
+echo
+echo -e "${BOLD}📋 Installation Log:${RESET}"
+echo "  ${LOG_FILE}"
+echo "  Review this file if you need to see what was installed"
 echo
 log_success "Happy hacking! 🚀"

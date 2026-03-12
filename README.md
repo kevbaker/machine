@@ -169,6 +169,30 @@ The bootstrap script goes beyond just installing tools - it sets up a complete d
 
 ---
 
+## 📋 Installation Logging
+
+The bootstrap script automatically creates a detailed log file during installation:
+
+**Location:** `~/.machine-install-YYYYMMDD_HHMMSS.log`
+
+**What's logged:**
+- Timestamp for every operation
+- All installations (packages, apps, tools)
+- Configuration changes
+- Errors and warnings
+- SSH key generation
+- macOS preference changes
+
+**Useful for:**
+- Troubleshooting if something goes wrong
+- Reviewing what was installed
+- Sharing with support/teammates
+- Keeping a record of your setup
+
+The log file path is displayed at the start and end of installation.
+
+---
+
 ## 🎯 Post-Installation
 
 After running the bootstrap, complete these steps:
