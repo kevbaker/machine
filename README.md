@@ -86,6 +86,7 @@ During installation, you'll be prompted to customize:
 - **Visual Studio Code** - Code editor with extensions
 - **Ghostty** - Modern terminal emulator
 - **Pixelmator Pro** - Image editor (requires App Store)
+- **Rectangle** - Window management (snap windows with keyboard shortcuts)
 
 #### Optional (Interactive Prompt)
 - **Google Chrome** - Web browser
@@ -166,6 +167,12 @@ The bootstrap script goes beyond just installing tools - it sets up a complete d
 - Go toolchain
 - Rust toolchain + Tauri CLI
 - Bun runtime
+
+### 🪟 Window Management
+- **Rectangle** installed and ready
+- Launch from Applications to set up keyboard shortcuts
+- Default shortcuts: ⌃⌥←→↑↓ for left/right/maximize/top-half
+- Free alternative to Magnet with same features
 
 ---
 

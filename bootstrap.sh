@@ -239,7 +239,7 @@ echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓�
 echo
 
 # Define core and optional applications
-CORE_APPS="visual-studio-code ghostty pixelmator-pro"
+CORE_APPS="visual-studio-code ghostty pixelmator-pro rectangle"
 OPTIONAL_APPS="google-chrome brave-browser orbstack tailscale karabiner-elements amphetamine bruno"
 
 # Install core applications
