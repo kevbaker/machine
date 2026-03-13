@@ -207,7 +207,7 @@ echo "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓�
 echo
 
 log_info "Installing essential CLI tools..."
-for package in git neovim ripgrep fd fzf starship zoxide atuin yazi lazygit zellij gh gum ollama awscli bat eza golang rust bun; do
+for package in git neovim ripgrep fd fzf starship zoxide atuin yazi lazygit zellij gh gum ollama awscli bat eza golang rust; do
   binary="$(formula_binary "${package}")"
   if ! check_command "${binary}"; then
     log_info "Installing ${package}..."
@@ -220,6 +220,18 @@ for package in git neovim ripgrep fd fzf starship zoxide atuin yazi lazygit zell
     log_success "${package} already installed"
   fi
 done
+
+# Bun requires a third-party tap (not in Homebrew core)
+if ! check_command "bun"; then
+  log_info "Installing bun..."
+  if ! brew tap oven-sh/bun 2>/dev/null || ! brew install oven-sh/bun/bun; then
+    log_error "Failed to install bun"
+  else
+    verify_package "bun"
+  fi
+else
+  log_success "bun already installed"
+fi
 
 # Install fzf keybindings
 log_info "Installing fzf keybindings..."
