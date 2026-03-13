@@ -92,9 +92,24 @@ check_command() {
   command -v "$1" >/dev/null 2>&1
 }
 
+# Map Homebrew formula names to their actual binary names
+# when the two differ (e.g., neovim -> nvim)
+formula_binary() {
+  case "$1" in
+    neovim)  echo "nvim"   ;;
+    ripgrep) echo "rg"     ;;
+    awscli)  echo "aws"    ;;
+    golang)  echo "go"     ;;
+    rust)    echo "rustc"  ;;
+    *)       echo "$1"     ;;
+  esac
+}
+
 verify_package() {
   local package="$1"
-  if ! check_command "${package}"; then
+  local binary
+  binary="$(formula_binary "${package}")"
+  if ! check_command "${binary}"; then
     log_error "Failed to install ${package}"
     return 1
   fi
@@ -193,7 +208,8 @@ echo
 
 log_info "Installing essential CLI tools..."
 for package in git neovim ripgrep fd fzf starship zoxide atuin yazi lazygit zellij gh gum ollama awscli bat eza golang rust bun; do
-  if ! check_command "${package}"; then
+  binary="$(formula_binary "${package}")"
+  if ! check_command "${binary}"; then
     log_info "Installing ${package}..."
     if ! brew install "${package}"; then
       log_error "Failed to install ${package}"
